@@ -11,7 +11,9 @@ from datetime import datetime
 from urllib.parse import quote
 
 import requests
+import cloudscraper
 from bs4 import BeautifulSoup
+
 import ddddocr
 
 logging.basicConfig(
@@ -91,17 +93,13 @@ def solve_captcha(image_bytes: bytes) -> str:
     return result
 
 # ── Session factory ────────────────────────────────────────────────────────────
-def make_session() -> requests.Session:
-    s = requests.Session()
-    s.headers.update({
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Connection": "keep-alive",
-        "Upgrade-Insecure-Requests": "1",
-    })
+    def make_session():
+    s = cloudscraper.create_scraper(
+        browser={"browser": "chrome", "platform": "windows", "mobile": False}
+    )
+    s.headers.update({"Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8"})
     return s
+
 
 # ── Login ──────────────────────────────────────────────────────────────────────
 def login(session: requests.Session) -> bool:
