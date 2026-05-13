@@ -13,7 +13,6 @@ from urllib.parse import quote
 import requests
 import cloudscraper
 from bs4 import BeautifulSoup
-
 import ddddocr
 
 logging.basicConfig(
@@ -93,13 +92,16 @@ def solve_captcha(image_bytes: bytes) -> str:
     return result
 
 # ── Session factory ────────────────────────────────────────────────────────────
-    def make_session():
+def make_session():
+    # cloudscraper automatically handles Cloudflare challenges (403 bypass)
     s = cloudscraper.create_scraper(
         browser={"browser": "chrome", "platform": "windows", "mobile": False}
     )
-    s.headers.update({"Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8"})
+    s.headers.update({
+        "Accept-Language": "tr-TR,tr;q=0.9,en;q=0.8",
+        "Upgrade-Insecure-Requests": "1",
+    })
     return s
-
 
 # ── Login ──────────────────────────────────────────────────────────────────────
 def login(session: requests.Session) -> bool:
